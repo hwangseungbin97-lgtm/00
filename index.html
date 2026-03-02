@@ -970,7 +970,7 @@ details[open] .fa{transform:rotate(180deg)}
     <div style="width:100%; height:420px; overflow:hidden; border-radius:24px;">
   <img src="img/profile1.png" 
        alt="프로필"
-       style="width:100%; height:100%; object-fit:cover; object-position:center 20%; display:block;">
+       style="width:100%; height:100%; object-fit:cover; height:420px; object-position:center 20%; display:block;">
 </div>
   </div>
 
@@ -1025,7 +1025,68 @@ details[open] .fa{transform:rotate(180deg)}
     <a class="s-btn" href="https://talk.naver.com/profile/w9250ia/form/1" target="_blank">확인하기 →</a>
   </div>
 </div>
+<div style="width:100%; max-width:700px; margin:auto;">
+  <a href="https://blog.naver.com/lumencia/224201731030" target="_blank" style="text-decoration:none;">
+    
+    <div style="
+      position:relative;
+      height:320px;
+      border-radius:20px;
+      overflow:hidden;
+      cursor:pointer;
+    ">
+      
+      <!-- 배경 이미지 -->
+      <img src="img/review.png" 
+           style="
+             width:100%;
+             height:100%;
+             object-fit:cover;
+             filter:blur(6px) brightness(0.7);
+             transition:0.4s ease;
+             display:block;
+           ">
+      
+      <!-- 오버레이 텍스트 -->
+      <div style="
+        position:absolute;
+        inset:0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:white;
+        font-size:28px;
+        font-weight:600;
+        letter-spacing:2px;
+        backdrop-filter:blur(0px);
+        transition:0.4s ease;
+      ">
+        클릭하고 후기 보기 →
+      </div>
 
+    </div>
+
+  </a>
+</div>
+
+<script>
+  const card = document.currentScript.previousElementSibling.querySelector("div div");
+  const img = card.querySelector("img");
+  const text = card.querySelector("div");
+
+  card.addEventListener("mouseenter", () => {
+    img.style.filter = "blur(0px) brightness(1)";
+    img.style.transform = "scale(1.05)";
+    img.style.transition = "0.4s ease";
+    text.style.background = "rgba(0,0,0,0.3)";
+  });
+
+  card.addEventListener("mouseleave", () => {
+    img.style.filter = "blur(6px) brightness(0.7)";
+    img.style.transform = "scale(1)";
+    text.style.background = "transparent";
+  });
+</script>
 </div>
 
 <script>
