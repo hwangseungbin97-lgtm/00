@@ -302,7 +302,13 @@ details[open] .fa{transform:rotate(180deg)}
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   ① HERO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<img class="hero-img" src="hero.jpeg" alt="돌고래하우스 메인 이미지"/>
+<div class="hero-img">
+  <div class="hero-slot-inner">
+    <div style="font-size:32px;opacity:.28">🏠</div>
+    <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.5px">메인 이미지 삽입 · 권장 480×340px</div>
+  </div>
+  <div class="hero-overlay"></div>
+</div>
 
 <section style="padding:28px 24px 56px">
   <div class="hero-tag rv">
@@ -366,9 +372,9 @@ details[open] .fa{transform:rotate(180deg)}
   </div>
 
   <!-- 이미지 슬롯 -->
- <div class="pain-photo">
-  <img src="pain.jpeg" alt="실거래 사례 1 건물 사진">
-</div>
+  <div class="img-slot h220 rv" style="margin-bottom:22px">
+    <div class="si">📷</div><div>공감 이미지 삽입 · 권장 480×220px</div>
+  </div>
 
   <div class="loss-rows">
     <div class="loss-row rv" data-d="1"><div class="l-yr">1년</div><div class="l-right"><div class="l-amt"><span id="p1D">1,080</span>만원</div><div class="l-unit">월세 + 관리비</div></div></div>
@@ -477,7 +483,6 @@ details[open] .fa{transform:rotate(180deg)}
     분양이 안 되더라도 다른 방향을 함께 찾습니다.<br/>
     <b>이 넓은 시각이 다른 분양사와의 차이입니다.</b>
   </p>
-  </div>
 
   <div class="exp-grid mt24">
     <div class="exp-box hl rv" data-d="1">
@@ -598,12 +603,8 @@ details[open] .fa{transform:rotate(180deg)}
   </div>
 
   <div class="img2 rv">
-    <div class="outside-photo">
-  <img src="outside.jpeg" alt="실거래 사례 2 건물 사진">
-</div>
-    <div class="inside-photo">
-  <img src="inside.jpeg" alt="실거래 사례 2 건물 사진">
-</div>
+    <div class="img-slot h180"><div class="si">🏢</div><div>외관 사진</div></div>
+    <div class="img-slot h180"><div class="si">🛋</div><div>내부 사진</div></div>
   </div>
   <p class="sm rv mt12" style="margin-bottom:20px">※ 건물명·가격은 상담 시 실명으로 안내드립니다. 위는 예시입니다.</p>
   <a class="btn btn-outline rv" href="https://talk.naver.com/profile/w9250ia/form/1" target="_blank">실제 건물명 · 가격 바로 확인하기</a>
@@ -766,9 +767,9 @@ details[open] .fa{transform:rotate(180deg)}
 
   <!-- 상담 캡처 슬롯 -->
   <div class="img-slot h260 mt22 rv" style="border-style:solid;border-color:var(--bd)">
-    <div class="profile-photo">
-  <img src="profile.jpeg" alt="실거래 사례 2 건물 사진">
-</div>
+    <div class="si">💬</div>
+    <div>실제 상담 캡처<br/>카카오 · 네이버 문의 스크린샷<br/>권장 480×260px</div>
+  </div>
 </section>
 
 <div class="thick"></div>
@@ -961,9 +962,9 @@ details[open] .fa{transform:rotate(180deg)}
 
   <!-- 프로필 이미지 슬롯 -->
   <div class="img-slot h200 rv" style="margin-bottom:22px">
-    <div class="chatproof-photo">
-  <img src="chatproof.jpeg" alt="프로필 사진">
-</div>
+    <div class="si">👤</div>
+    <div>대표 프로필 사진<br/>권장 480×200px</div>
+  </div>
 
   <div class="profile-stats rv">
     <div class="ps-box"><div class="ps-num">15년+</div><div class="ps-lbl">부동산<br/>전문 경력</div></div>
