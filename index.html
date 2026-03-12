@@ -433,6 +433,26 @@ input[type=range]::-webkit-slider-thumb{
   font-family:var(--body);font-size:13px;font-weight:700;
   text-align:center;cursor:pointer;transition:all .2s;
 }
+
+/* 바로 연락 버튼 */
+.contact-direct-btn{
+  display:block;width:100%;padding:14px 16px;
+  border-radius:10px;margin-bottom:9px;
+  font-family:var(--body);font-size:14px;font-weight:900;
+  text-align:center;text-decoration:none;
+  transition:transform .15s,opacity .15s;
+  letter-spacing:-.2px;
+}
+.contact-direct-btn:active{transform:scale(.98);}
+.phone-btn{
+  background:var(--green);color:var(--navy);
+}
+.naver-btn{
+  background:#03C75A;color:#fff;
+}
+.kakao-btn{
+  background:#FEE500;color:#191919;
+}
 </style>
 </head>
 <body>
@@ -746,6 +766,21 @@ input[type=range]::-webkit-slider-thumb{
   <div class="success-title">상담 신청이 완료되었습니다!</div>
   <div class="success-sub" id="successSubText">빠른 시간 안에 연락드리겠습니다. 궁금한 점은 언제든지 편하게 문의주세요.</div>
   <div class="success-info-box" id="successInfoBox"></div>
+
+  <!-- 바로 연락하기 버튼들 -->
+  <div style="margin-bottom:12px;">
+    <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:1px;margin-bottom:10px;">지금 바로 연락하기</div>
+    <a href="tel:01083871793" class="contact-direct-btn phone-btn">
+      📞 전화 바로 연결 · 010-8387-1793
+    </a>
+    <a href="https://talk.naver.com/profile/w9250ia/form/1" target="_blank" class="contact-direct-btn naver-btn">
+      💬 네이버 톡톡으로 문의하기
+    </a>
+    <a href="https://open.kakao.com/me/dolphinhouse" target="_blank" class="contact-direct-btn kakao-btn">
+      🟡 카카오톡 오픈채팅 문의
+    </a>
+  </div>
+
   <button class="success-retry" onclick="resetDiagnosis()">↩ 처음부터 다시 진단하기</button>
 </div>
 
@@ -1492,6 +1527,8 @@ async function submitContact() {
 
 // ── 성공 화면 표시
 function showSuccess(name, phone) {
+  // 결과 전체 + 연락처 폼 숨기기
+  document.getElementById('resultWrap').classList.remove('show');
   document.getElementById('contactStep').style.display = 'none';
   document.getElementById('stickyCta').classList.remove('show');
 
