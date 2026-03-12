@@ -434,6 +434,27 @@ input[type=range]::-webkit-slider-thumb{
   text-align:center;cursor:pointer;transition:all .2s;
 }
 
+/* 지역 선택 */
+.region-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px;}
+.region-btn{
+  padding:11px 6px;border-radius:10px;
+  background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.15);
+  color:rgba(255,255,255,.75);font-size:12px;font-weight:700;
+  text-align:center;cursor:pointer;transition:all .2s;line-height:1.5;
+  position:relative;-webkit-user-select:none;user-select:none;
+}
+.region-btn .rb-icon{font-size:16px;display:block;margin-bottom:3px;}
+.region-btn.selected{background:var(--green-lt);border-color:var(--green);color:var(--green);}
+.region-btn.priority{border-color:rgba(0,214,143,.3);}
+.region-btn.other{border-color:rgba(255,184,0,.2);color:rgba(255,255,255,.5);}
+.region-btn.other.selected{background:var(--yellow-lt);border-color:var(--yellow);color:var(--yellow);}
+.rb-tag{
+  position:absolute;top:-6px;right:-4px;
+  background:var(--green);color:var(--navy);
+  font-size:9px;font-weight:900;padding:2px 5px;border-radius:20px;
+  letter-spacing:.3px;
+}
+
 /* 바로 연락 버튼 */
 .contact-direct-btn{
   display:block;width:100%;padding:14px 16px;
@@ -604,7 +625,7 @@ input[type=range]::-webkit-slider-thumb{
 <div class="step-section" id="step5">
   <div class="card">
     <div class="card-title">STEP 05 / 추가 정보</div>
-    <div class="card-question">마지막 두 가지만<br/>알려주세요.</div>
+    <div class="card-question">세 가지만 더<br/>알려주세요.</div>
     <div class="card-sub">더 정확한 진단을 위해 필요합니다.</div>
 
     <div class="inp-wrap">
@@ -629,6 +650,35 @@ input[type=range]::-webkit-slider-thumb{
           <span class="cb-icon">⚠️</span>연체 경험<br/>(있음)
         </div>
       </div>
+    </div>
+
+    <div class="inp-wrap">
+      <div class="inp-label">희망 지역 <span style="font-size:10px;color:rgba(255,255,255,.5);font-weight:400;">· 서비스 가능 지역 확인</span></div>
+      <div class="region-grid">
+        <div class="region-btn priority" onclick="selectRegion(this,'서울')">
+          <span class="rb-icon">🏙️</span>서울
+          <span class="rb-tag">우선</span>
+        </div>
+        <div class="region-btn priority" onclick="selectRegion(this,'경기')">
+          <span class="rb-icon">🏘️</span>경기
+          <span class="rb-tag">우선</span>
+        </div>
+        <div class="region-btn priority" onclick="selectRegion(this,'인천')">
+          <span class="rb-icon">🌊</span>인천
+          <span class="rb-tag">우선</span>
+        </div>
+        <div class="region-btn" onclick="selectRegion(this,'천안/아산')">
+          <span class="rb-icon">🚄</span>천안/아산
+        </div>
+        <div class="region-btn" onclick="selectRegion(this,'대전')">
+          <span class="rb-icon">🏙️</span>대전
+        </div>
+        <div class="region-btn other" onclick="selectRegion(this,'기타지방')">
+          <span class="rb-icon">📍</span>기타 지방
+        </div>
+      </div>
+      <!-- 지역 안내 문구 -->
+      <div id="regionNotice" style="display:none;margin-top:10px;padding:11px 13px;border-radius:9px;font-size:12px;line-height:1.7;font-weight:600;white-space:pre-line;"></div>
     </div>
 
     <button class="next-btn" id="btn5" onclick="runDiagnosis()" disabled>📊 내 조건 진단하기</button>
@@ -886,8 +936,42 @@ function updateDebtMonthly(debt) {
 }
 
 // ══════════════════════════════════
-// 선택지 처리
+// 지역 선택
 // ══════════════════════════════════
+let _selectedRegion = '';
+
+// 지역별 설정 (우선도 + 안내 문구)
+const regionConfig = {
+  '서울':    { priority: 'high',   penalty: 0,  color: 'var(--green)',  bg: 'rgba(0,214,143,.1)',  border: 'rgba(0,214,143,.35)',  msg: '✅ 서울은 매물 공급이 가장 활발한 지역입니다.\n현재 조건으로 상담 진행이 가능합니다.' },
+  '경기':    { priority: 'high',   penalty: 0,  color: 'var(--green)',  bg: 'rgba(0,214,143,.1)',  border: 'rgba(0,214,143,.35)',  msg: '✅ 경기도는 신축빌라 공급이 많고 구조 설계가 유리한 지역입니다.\n상담 진행이 충분히 가능합니다.' },
+  '인천':    { priority: 'high',   penalty: 0,  color: 'var(--green)',  bg: 'rgba(0,214,143,.1)',  border: 'rgba(0,214,143,.35)',  msg: '✅ 인천은 현재 매물 연결이 가능한 지역입니다.\n상담 후 바로 매물 안내가 가능합니다.' },
+  '천안/아산':{ priority: 'mid',  penalty: 5,  color: 'var(--yellow)', bg: 'rgba(255,184,0,.1)',   border: 'rgba(255,184,0,.35)',  msg: '⚡ 천안/아산은 수도권 이외 지역으로 매물 연결에 시간이 걸릴 수 있습니다.\n상담은 가능하지만 수도권 대비 선택지가 제한될 수 있습니다.' },
+  '대전':    { priority: 'mid',   penalty: 8,  color: 'var(--yellow)', bg: 'rgba(255,184,0,.1)',   border: 'rgba(255,184,0,.35)',  msg: '⚡ 대전은 현재 직접 서비스 지역이 아닙니다.\n상담은 가능하지만 매물 연결까지 시간이 걸릴 수 있습니다.' },
+  '기타지방': { priority: 'low',  penalty: 15, color: 'var(--red)',    bg: 'rgba(255,68,68,.08)',  border: 'rgba(255,68,68,.25)',  msg: '🔴 현재 서비스 가능 지역이 아닙니다.\n수도권(서울·경기·인천) 또는 천안권이 아니면 매물 연결이 어렵습니다.\n상담 신청은 가능하지만 진행이 제한될 수 있습니다.' }
+};
+
+function selectRegion(el, value) {
+  document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  _selectedRegion = value;
+
+  // btn5 활성화 체크
+  if (state.houseOwn && state.overdue && _selectedRegion) {
+    document.getElementById('btn5').disabled = false;
+  }
+
+  // 안내 문구 표시
+  const cfg = regionConfig[value];
+  const notice = document.getElementById('regionNotice');
+  if (cfg) {
+    notice.style.display = 'block';
+    notice.style.background = cfg.bg;
+    notice.style.border = `1px solid ${cfg.border}`;
+    notice.style.color = cfg.color;
+    notice.style.whiteSpace = 'pre-line';
+    notice.textContent = cfg.msg;
+  }
+}
 function selectChoice(el, key, value) {
   const grid = el.parentElement;
   grid.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
@@ -898,7 +982,7 @@ function selectChoice(el, key, value) {
   if (key === 'jobType') { document.getElementById('btn2').disabled = false; }
   if (key === 'cash') { document.getElementById('btn4').disabled = false; }
   if (key === 'houseOwn' || key === 'overdue') {
-    if (state.houseOwn && state.overdue) document.getElementById('btn5').disabled = false;
+    if (state.houseOwn && state.overdue && _selectedRegion) document.getElementById('btn5').disabled = false;
   }
 }
 
@@ -1030,7 +1114,11 @@ function computeDiagnosis() {
 
   overallScore = Math.max(0, Math.min(100, Math.round(overallScore)));
 
-  // ── 7) 등급 결정 ──
+  // ── 7) 지역 패널티 반영 ──
+  const regionPenalty = (regionConfig[_selectedRegion] && regionConfig[_selectedRegion].penalty) || 0;
+  overallScore = Math.max(0, overallScore - regionPenalty);
+
+  // ── 8) 등급 결정 ──
   if (overallScore >= 75 && score >= 665 && income >= 200 && jobType !== '무직/기타' && overdue === '없음') {
     grade = 'A'; canBuy = true;
   } else if (overallScore >= 55 && score >= 600 && income >= 150 && overdue === '없음') {
@@ -1041,15 +1129,21 @@ function computeDiagnosis() {
     grade = 'D'; canBuy = false;
   }
 
-  // ── 8) 소득 없는 특수 케이스 ──
+  // ── 9) 소득 없는 특수 케이스 ──
   let zeroIncomeNote = '';
   if (income === 0 || jobType === '무직/기타') {
     grade = 'D'; canBuy = false;
     zeroIncomeNote = '소득 증빙 불가 시 1금융 주담대 승인이 어렵습니다.';
   }
 
+  // ── 10) 기타지방 강제 하향 ──
+  if (_selectedRegion === '기타지방') {
+    if (grade === 'A') { grade = 'B'; canBuy = true; }
+    else if (grade === 'B') { grade = 'C'; canBuy = false; }
+  }
+
   return {
-    grade, canBuy, overallScore,
+    grade, canBuy, overallScore, regionPenalty,
     creditGrade, creditScore, creditColor,
     annualIncome, recognizedIncome,
     monthlyLimit, debtMonthly, marginMonthly,
@@ -1107,7 +1201,18 @@ function showResult() {
   header.className = 'result-header ' + gd.cls;
   document.getElementById('resultGrade').textContent = gd.icon;
   document.getElementById('resultTitle').textContent = gd.title;
-  document.getElementById('resultSub').textContent = gd.sub;
+
+  // 지역 패널티 적용 시 결과 설명에 지역 안내 추가
+  let subText = gd.sub;
+  if (_selectedRegion && r.regionPenalty > 0) {
+    const regionMsg = {
+      '천안/아산': '\n\n📍 희망 지역(천안/아산)이 수도권 외 지역으로\n매물 선택지가 제한될 수 있습니다.',
+      '대전':      '\n\n📍 희망 지역(대전)은 현재 직접 서비스 지역이 아니어서\n진행 가능성이 다소 낮아집니다.',
+      '기타지방':  '\n\n🔴 희망 지역이 현재 서비스 가능 범위 밖입니다.\n수도권 또는 천안권으로 변경 시 가능성이 높아집니다.'
+    };
+    if (regionMsg[_selectedRegion]) subText += regionMsg[_selectedRegion];
+  }
+  document.getElementById('resultSub').textContent = subText;
 
   // ── DSR 박스
   document.getElementById('dsr-income').textContent = `연 ${numFmt(r.annualIncome * 10000)}원`;
@@ -1307,6 +1412,9 @@ function resetDiagnosis() {
   document.getElementById('inputName').value = '';
   document.getElementById('inputPhone').value = '';
   document.getElementById('inputEmail').value = '';
+  document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('selected'));
+  _selectedRegion = '';
+  document.getElementById('regionNotice').style.display = 'none';
   document.getElementById('nameError').classList.remove('show');
   document.getElementById('phoneError').classList.remove('show');
   document.getElementById('emailError').classList.remove('show');
@@ -1476,7 +1584,6 @@ async function submitContact() {
     phoneErr.classList.add('show');
     valid = false;
   }
-  // 이메일은 선택 — 입력했을 때만 형식 검증
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     emailEl.classList.add('error');
     emailErr.classList.add('show');
@@ -1495,6 +1602,7 @@ async function submitContact() {
     name:          name,
     phone:         phone.replace(/\D/g, ''),
     email:         email,
+    region:        _selectedRegion,
     grade:         _currentGrade,
     diagnostic_q1: diag.q1,
     diagnostic_q2: diag.q2,
